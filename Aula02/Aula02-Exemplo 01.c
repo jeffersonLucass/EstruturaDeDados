@@ -17,7 +17,7 @@ int MyStrlen(char *str){
 
 void main(){
    char Frase[] = "Meu nome e Eneias!!!";
-   printf("%s - %d caracteres.\n",Frase,MyStrlen(Frase));
+   printf("%s - %d caracteres.\n", Frase ,MyStrlen(Frase));
 
 
 
