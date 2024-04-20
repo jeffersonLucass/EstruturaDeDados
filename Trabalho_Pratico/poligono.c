@@ -33,7 +33,7 @@ int main() {
         fscanf(arquivo, "%lf %lf", &Vertices[i].x, &Vertices[i].y);
     }
     fclose(arquivo);
-    double area = calcularArea(Vertices, TotalDeVertices);
+    double area = calcularAreaTriangulo(Vertices, TotalDeVertices);
     printf("A area do poligono eh: %.2lf\n", area);
     free(Vertices);
 
