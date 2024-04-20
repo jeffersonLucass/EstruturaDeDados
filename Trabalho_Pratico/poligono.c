@@ -1,30 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <math.h>
 
-typedef struct 
-{
-    float X;
-    float Y;
+typedef struct {
+    double x;
+    double y;
 } Ponto;
 
-float AreaTriangulo(float x1, float y1, float x2, float y2, float x3, float y3){
-    return fabs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)) / 2.0);
+double calcularAreaTriangulo(Ponto* Vertices, int TotalDeVertices) {
+    double area = 0.0;
+    int k = TotalDeVertices - 1;
+
+    for (int i = 0; i < TotalDeVertices; i++) {
+        area += (Vertices[k].x + Vertices[i].x) * (Vertices[k].y - Vertices[i].y);
+        k = i;
+    }
+
+    return abs(area / 2.0);
 }
 
+int main() {
+    FILE *arquivo= fopen("trianguloABC.txt.txt", "r");
+    int TotalDeVertices;
+    Ponto *Vertices;
 
-
-int main(){
-   float x1 = 0.0, y1 = 0.0;
-   float x2 = 4.0, y2 = 0.0;
-   float x3 = 0.0, y3 = 3.0;
-   printf("Área do triângulo: %.2f\n",AreaTriangulo(x1, y1, x2, y2, x3, y3));
-
-
-
-
-
+    if (arquivo == NULL) {
+        fprintf(stderr, "Erro ao abrir o arquivo.\n");
+        return 1;
+    }
+    fscanf(arquivo, "%d", &TotalDeVertices);
+    Vertices = (Ponto *)malloc(TotalDeVertices * sizeof(Ponto));
+    for (int i = 0; i < TotalDeVertices; i++) {
+        fscanf(arquivo, "%lf %lf", &Vertices[i].x, &Vertices[i].y);
+    }
+    fclose(arquivo);
+    double area = calcularArea(Vertices, TotalDeVertices);
+    printf("A area do poligono eh: %.2lf\n", area);
+    free(Vertices);
 
     return 0;
 }
