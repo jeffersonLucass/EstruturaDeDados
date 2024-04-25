@@ -6,16 +6,18 @@ typedef struct {
     double y;
 } Ponto;
 
-double calcularAreaTriangulo(Ponto* Vertices, int TotalDeVertices) {
-    double area = 0.0;
-    int k = TotalDeVertices - 1;
+float area_triangulo(Ponto a, Ponto b,Ponto c){
+    return 0.5 * abs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
+}
 
-    for (int i = 0; i < TotalDeVertices; i++) {
-        area += (Vertices[k].x + Vertices[i].x) * (Vertices[k].y - Vertices[i].y);
-        k = i;
+float calcularAreaPoligono(Ponto Vertices[], int TotalDeVertices) {
+    float area = 0.0;
+
+    for (int i = 0; i < TotalDeVertices -1; i++) {
+        area += area_triangulo(Vertices[0],Vertices[i],Vertices[i + 1]);
     }
 
-    return abs(area / 2.0);
+    return area;
 }
 
 int main() {
@@ -33,7 +35,7 @@ int main() {
         fscanf(arquivo, "%lf %lf", &Vertices[i].x, &Vertices[i].y);
     }
     fclose(arquivo);
-    double area = calcularAreaTriangulo(Vertices, TotalDeVertices);
+    float area = calcularAreaPoligono(Vertices, TotalDeVertices);
     printf("A area do poligono eh: %.2lf\n", area);
     free(Vertices);
 
