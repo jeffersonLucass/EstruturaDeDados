@@ -1,0 +1,7 @@
+1000
+4
+100 Cidade A
+300 Cidade B
+600 Cidade C
+900 Cidade D
+
