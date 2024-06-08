@@ -1,4 +1,6 @@
 #include "cidades.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 // Função para inicializar a estrutura Estrada a partir de um arquivo
@@ -18,6 +20,7 @@ Estrada *getEstrada(const char *nomeArquivo) {
 
     fscanf(arquivo, "%d", &(estrada->T));
     fscanf(arquivo, "%d", &(estrada->N));
+    fgetc(arquivo); //ira consumir o caractere da nova linha
 
     estrada->C = (Cidade *)malloc(estrada->N * sizeof(Cidade));
     if (!estrada->C) {
@@ -41,8 +44,9 @@ Estrada *getEstrada(const char *nomeArquivo) {
 // Função para calcular a menor vizinhança de estrada entre as cidades
 double calcularMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
-    if (!estrada) return -1;
-
+    if (!estrada){ 
+       return -1;
+    }
     double menorVizinhanca = estrada->T;
     for (int i = 0; i < estrada->N - 1; i++) {
         double vizinhancaAtual = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
@@ -64,7 +68,7 @@ char *cidadeMenorVizinhanca(const char *nomeArquivo) {
     double menorVizinhanca = estrada->T;
     char *cidadeMenor = (char *)malloc(256 * sizeof(char));
     if (!cidadeMenor) {
-        perror("Erro ao alocar memória para cidadeMenor");
+        perror("Erro ao alocar memória para a Menor cidade");
         free(estrada->C);
         free(estrada);
         return NULL;
