@@ -42,6 +42,7 @@ Estrada *getEstrada(const char *nomeArquivo) {
 }
 
 // Função para calcular a menor vizinhança de estrada entre as cidades
+//Verificar O calculo menorvizinhanca de estrada
 double calcularMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
     if (!estrada){ 

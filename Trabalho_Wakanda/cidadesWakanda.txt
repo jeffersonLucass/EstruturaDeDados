@@ -1,7 +1,5 @@
-1000
-4
-100 Cidade A
-300 Cidade B
-600 Cidade C
-900 Cidade D
+10
+2
+8 Birnin Zana
+5 Birnin S'Yan
 
