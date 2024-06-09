@@ -1,5 +1,12 @@
-10
-2
-8 Birnin Zana
-5 Birnin S'Yan
+30
+5
+2 CidadeA
+7 CidadeB
+14 CidadeC
+21 CidadeD
+28 CidadeE
+
+
+
+
 

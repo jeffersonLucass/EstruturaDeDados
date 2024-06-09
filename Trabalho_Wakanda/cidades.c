@@ -3,7 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 
-// Função para inicializar a estrutura Estrada a partir de um arquivo
+void ordenarCidades(Cidade *cidades, int N) {
+    for (int i = 0; i < N - 1; i++) {
+        for (int j = 0; j < N - i - 1; j++) {
+            if (cidades[j].Posicao > cidades[j + 1].Posicao) {
+                Cidade temp = cidades[j];
+                cidades[j] = cidades[j + 1];
+                cidades[j + 1] = temp;
+            }
+        }
+    }
+}
+
 Estrada *getEstrada(const char *nomeArquivo) {
     FILE *arquivo = fopen(nomeArquivo, "r");
     if (!arquivo) {
@@ -20,7 +31,7 @@ Estrada *getEstrada(const char *nomeArquivo) {
 
     fscanf(arquivo, "%d", &(estrada->T));
     fscanf(arquivo, "%d", &(estrada->N));
-    fgetc(arquivo); //ira consumir o caractere da nova linha
+    fgetc(arquivo); // Consome o caractere de nova linha após o número de cidades
 
     estrada->C = (Cidade *)malloc(estrada->N * sizeof(Cidade));
     if (!estrada->C) {
@@ -32,23 +43,21 @@ Estrada *getEstrada(const char *nomeArquivo) {
 
     char linha[512];
     for (int i = 0; i < estrada->N; i++) {
-        // Ler a linha inteira e depois usar sscanf para extrair os valores
         fgets(linha, sizeof(linha), arquivo);
         sscanf(linha, "%d %[^\n]", &(estrada->C[i].Posicao), estrada->C[i].Nome);
     }
+
+    ordenarCidades(estrada->C, estrada->N);  // utilizado para ordenar as cidades
 
     fclose(arquivo);
     return estrada;
 }
 
-// Função para calcular a menor vizinhança de estrada entre as cidades
-//Verificar O calculo menorvizinhanca de estrada
 double calcularMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
-    if (!estrada){ 
-       return -1;
-    }
-    double menorVizinhanca = estrada->T;
+    if (!estrada) return -1;
+
+    double menorVizinhanca = estrada->T; // Inicializa com o comprimento total da estrada
     for (int i = 0; i < estrada->N - 1; i++) {
         double vizinhancaAtual = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
         if (vizinhancaAtual < menorVizinhanca) {
@@ -61,26 +70,32 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
     return menorVizinhanca;
 }
 
-// Função para encontrar a cidade com a menor vizinhança
 char *cidadeMenorVizinhanca(const char *nomeArquivo) {
     Estrada *estrada = getEstrada(nomeArquivo);
     if (!estrada) return NULL;
 
-    double menorVizinhanca = estrada->T;
+    double menorVizinhanca = estrada->T; // Inicializa com o comprimento total da estrada
     char *cidadeMenor = (char *)malloc(256 * sizeof(char));
     if (!cidadeMenor) {
-        perror("Erro ao alocar memória para a Menor cidade");
+        perror("Erro ao alocar memória para cidadeMenor");
         free(estrada->C);
         free(estrada);
         return NULL;
     }
-    
+    double vizinhancaAtual;
     for (int i = 0; i < estrada->N - 1; i++) {
-        double vizinhancaAtual = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
+        vizinhancaAtual = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
         if (vizinhancaAtual < menorVizinhanca) {
             menorVizinhanca = vizinhancaAtual;
             strcpy(cidadeMenor, estrada->C[i].Nome);
         }
+    }
+
+    // Verificar último trecho da estrada
+    vizinhancaAtual = (estrada->T - estrada->C[estrada->N - 1].Posicao) / 2.0;
+    if (vizinhancaAtual < menorVizinhanca) {
+        menorVizinhanca = vizinhancaAtual;
+        strcpy(cidadeMenor, estrada->C[estrada->N - 1].Nome);
     }
 
     free(estrada->C);
