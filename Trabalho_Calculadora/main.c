@@ -6,24 +6,34 @@
 #include "calculadora.h"
 
 int main() {
-    const char* expressions[] = {
-        "3 4 2 * 1 5 - 2 3 ^ ^ / +",
-        "3 4 + 5 *",
-        "7 2 * 4 +",
-        "8 5 2 4 + * +",
-        "6 2 / 3 + 4 *",
-        "9 5 2 8 * 4 + * +",
-        "2 3 + log 5 /",
-        "10 log 3 ^ 2 +",
-        "45 60 + 30 cos *",
-        "0.5 45 sen 2 ^ +"
-    };
+    char posFixa1[] = "53 23 + 8 2 - *";
+    char posFixa2[] = "10 2 / 3 4 * +";
+    char posFixa3[] = "12 3 / 4 2 ^ +";
 
-    for (int i = 0; i < 10; i++) {
-        printf("Postfix: %s\n", expressions[i]);
-        printf("Resultado: %lf\n", evaluatePostfix(expressions[i]));
-        printf("Prefix: %s\n\n", postfixToPrefix(expressions[i]));
-    }
+    // Convertendo para a forma infixa
+    char *inFixa1 = getFormaInFixa(posFixa1);
+    char *inFixa2 = getFormaInFixa(posFixa2);
+    char *inFixa3 = getFormaInFixa(posFixa3);
+
+    // Calculando o valor das expressões
+    float valor1 = getValor(posFixa1);
+    float valor2 = getValor(posFixa2);
+    float valor3 = getValor(posFixa3);
+
+    // Imprimindo os resultados
+    printf("Expressao 1: %s\n", posFixa1);
+    printf("Infixa 1: %s\n", inFixa1);
+    printf("Valor 1: %.2f\n\n", valor1);
+
+    printf("Expressao 2: %s\n", posFixa2);
+    printf("Infixa 2: %s\n", inFixa2);
+    printf("Valor 2: %.2f\n\n", valor2);
+
+    printf("Expressao 3: %s\n", posFixa3);
+    printf("Infixa 3: %s\n", inFixa3);
+    printf("Valor 3: %.2f\n\n", valor3);
 
     return 0;
 }
+
+

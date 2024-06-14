@@ -11,20 +11,14 @@
 #define MAXEXPR 100
 
 typedef struct {
-    int top;
-    char *stack[MAXSTACK];
-} Stack;
+    char posFixa[512];     // Expressão na forma pos fixa, como 3 12 4 + *
+    char inFixa[512];      // Expressão na forma pos fixa, como 3 * (12 + 4)
+    float Valor;           // Valor numérico da expressão  
+} Expressao;
 
-void initStack(Stack *s);
-int isEmpty(Stack *s);
-int isFull(Stack *s);
-void push(Stack *s, char *value);
-char *pop(Stack *s);
-int isOperator(char c);
-int precedence(char c);
-double applyOperator(double a, double b, char operator);
-double evaluatePostfix(const char* expression);
-char* infixToPostfix(const char* infix);
-char* postfixToPrefix(const char* postfix);
+
+char *getFormaInFixa(char *Str);    // Retorna a forma inFixa de Str (posFixa)
+float getValor(char *Str);          // Calcula o valor de Str (na forma posFixa)
+
 
 #endif
