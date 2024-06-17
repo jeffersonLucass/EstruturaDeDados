@@ -3,91 +3,151 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
 #include "calculadora.h"
 
-#define MAX_SIZE 512
+#define MAXIMO_TAMANHO 512
+#define OPERADORES "+-*/^"
 
+typedef struct {
+    int topo;
+    char *items[MAXIMO_TAMANHO];
+} Pilha;
+
+void InicializacaoPilha(Pilha *pilha) {
+    pilha->topo = -1;
+}
+
+int pilhaVazia(Pilha *pilha) {
+    return pilha->topo == -1;
+}
+
+int pilhaCheia(Pilha *pilha) {
+    return pilha->topo == MAXIMO_TAMANHO - 1;
+}
 // Função para empilhar elementoos na pilha
-void empilhar(float *stack, int *topo, float elemento) {
-    stack[++(*topo)] = elemento;
+void empilhar(Pilha *pilha, char *objeto) {
+    if (pilhaCheia(pilha)) {
+        printf("A Pilha está cheia\n");
+        exit(1);
+    }
+    pilha->items[++(pilha->topo)] = strdup(objeto);
 }
 
-// Função para desempilhar elementoos da pilha
-float desempilhar(float *stack, int *topo) {
-    return stack[(*topo)--];
+// Função para desempilharr elementoos da pilha
+char *desempilhar(Pilha *pilha) {
+    if (pilhaVazia(pilha)) {
+        printf("Pilha está vazia.\n");
+        exit(1);
+    }
+    return pilha->items[(pilha->topo)--];
 }
-
+bool Validar_Operador(char operador) {
+    return strchr(OPERADORES, operador) != NULL;
+}
+bool Validar_Funcao(char *funcao) {
+    return (strcmp(funcao, "sen") == 0 || strcmp(funcao, "cos") == 0 ||strcmp(funcao, "tan") == 0 || strcmp(funcao, "log") == 0);
+}
 // Função para avaliar uma expressão pós-fixa
-float evaluatePostfix(char *expression) {
-    float stack[MAX_SIZE];
-    int topo = -1;
-    char *token = strtok(expression, " "); // Dividir a expressão em tokens separados por espaço
+float validarPosfixa(char *expressao) {
+    Pilha pilha;
+    InicializacaoPilha(&pilha);
+    char *token = strtok(expressao, " "); // Dividir a expressão em tokens separadianoos por espaço
 
     while (token != NULL) {
-        if (isdigit(*token) || (*token == '-' && isdigit(*(token + 1)))) {
+        if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
             // Se o token for um número, empilhá-lo
-            empilhar(stack, &topo, atof(token));
-        } else {
+            empilhar(&pilha, token);
+        } else if (Validar_Operador(token[0]) && strlen(token) == 1){
             // Se o token for um operador
-            float operand2 = desempilhar(stack, &topo);
-            float operand1 = desempilhar(stack, &topo);
-            float result;
+            float operador2 = atof(desempilhar(&pilha));
+            float operador1 = atof(desempilhar(&pilha));
+            float resultado;
 
-            switch (*token) {
+            switch (token[0]) {
                 case '+':
-                    result = operand1 + operand2;
+                    resultado = operador1 + operador2;
                     break;
                 case '-':
-                    result = operand1 - operand2;
+                    resultado = operador1 - operador2;
                     break;
                 case '*':
-                    result = operand1 * operand2;
+                    resultado = operador1 * operador2;
                     break;
                 case '/':
-                    result = operand1 / operand2;
+                    resultado = operador1 / operador2;
                     break;
                 case '^':
-                    result = pow(operand1, operand2);
+                    resultado = powf(operador1, operador2);
                     break;
-                case 's': // seno
-                    result = sin(operand2);
-                    break;
-                case 'c': // cosseno
-                    result = cos(operand2);
-                    break;
-                case 't': // tangente
-                    result = tan(operand2);
-                    break;
-                case 'l': // logaritmo de base 10
-                    result = log10(operand2);
-                    break;
-                case 'r': // radiciação (raiz quadrada)
-                    result = sqrt(operand2);
-                    break;
+                
                 default:
-                    printf("Operador inválido: %c\n", *token);
-                    return 0;
+                     resultado = 0.0;
+                     break;
             }
-
-            // Empilhar o resultado
-            empilhar(stack, &topo, result);
+            char resultadoDaString[32];
+            snprintf(resultadoDaString, sizeof(resultadoDaString), "%f", resultado);
+            empilhar(&pilha, resultadoDaString);
+        } else if (Validar_Funcao(token)) {
+            float valor = atof(desempilhar(&pilha));
+            float resultado;
+            float radiano = valor * (3.141592 / 180);
+            if (strcmp(token, "sen") == 0) {
+                resultado = sinf(radiano);
+            } else if (strcmp(token, "cos") == 0) {
+                resultado = cosf(radiano);
+            } else if (strcmp(token, "tan") == 0) {
+                resultado = tanf(radiano);
+            } else if (strcmp(token, "log") == 0) {
+                resultado = log10f(valor);
+            } else {
+                resultado = 0.0;
+            }
+            char resultadoDaString[32];
+            snprintf(resultadoDaString, sizeof(resultadoDaString), "%f", resultado);
+            empilhar(&pilha, resultadoDaString);
         }
-
-        token = strtok(NULL, " "); // Próximo token
+        token = strtok(NULL, " ");
     }
-
-    // O resultado final estará no topoo da pilha
-    return desempilhar(stack, &topo);
+    return atof(desempilhar(&pilha));
 }
 
-// Função para obter a forma pós-fixa de uma expressão
-char *getFormaPosFixa(char *Str) {
-    return Str;
+// Função para obter a forma in-fixa de uma expressão
+char *getFormaInFixa(char *Str) {
+    static char infixa[512];
+    Pilha pilha;
+    InicializacaoPilha(&pilha);
+
+    char *token = strtok(Str, " ");
+    while (token != NULL) {
+        if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+            empilhar(&pilha, token);
+        } else if (Validar_Operador(token[0]) && strlen(token) == 1) {
+            char *valor2 = desempilhar(&pilha);
+            char *valor1 = desempilhar(&pilha);
+            char expr[512];
+            snprintf(expr, sizeof(expr), "(%s %c %s)", valor1, token[0], valor2);
+            empilhar(&pilha, expr);
+            free(valor1);
+            free(valor2);
+        } else if (Validar_Funcao(token)) {
+            char *valor1 = desempilhar(&pilha);
+            char expr[512];
+            snprintf(expr, sizeof(expr), "%s(%s)", token, valor1);
+            empilhar(&pilha, expr);
+            free(valor1);
+        }
+        token = strtok(NULL, " ");
+    }
+    strcpy(infixa, desempilhar(&pilha));
+    return infixa;
 }
 
 // Função para calcular o valor de uma expressão pós-fixa
 float getValor(char *Str) {
-    return evaluatePostfix(Str);
+    char posfixada[512];
+    strcpy(posfixada, Str);  
+    return validarPosfixa(posfixada);
 }
 
 

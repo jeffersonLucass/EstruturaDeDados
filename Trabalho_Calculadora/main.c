@@ -1,37 +1,39 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <math.h>
 #include "calculadora.h"
 
+#define TAMANHO_MAXIMO 100
+#define OPERADORES "+-*/^"
+
+void testarExpressao(char *posFix) {
+    Expressao expr;
+    strcpy(expr.posFixa, posFix);
+    expr.Valor = getValor(expr.posFixa);
+    strcpy(expr.inFixa, getFormaInFixa(expr.posFixa));
+
+    printf("Expressao PosFixa: %s\n", expr.posFixa);
+    printf("Expressao Infixa: %s\n", expr.inFixa);
+    printf("Valor: %.2f\n\n", expr.Valor);
+}
+
 int main() {
-    char posFixa1[] = "53 23 + 8 2 - *";
-    char posFixa2[] = "10 2 / 3 4 * +";
-    char posFixa3[] = "12 3 / 4 2 ^ +";
+    char *testes[] = {
+        "3 4 + 5 *",
+        "7 2 * 4 +",
+        "8 5 2 4 + * +",
+        "6 2 / 3 + 4 *",
+        "9 5 2 8 * 4 + * +",
+        "2 3 + log 5 /",
+        "10 log 3 ^ 2 +",
+        "45 60 + 30 cos *",
+        "0.5 45 sen 2 ^ +"
+    };
 
-    // Convertendo para a forma infixa
-    char *inFixa1 = getFormaInFixa(posFixa1);
-    char *inFixa2 = getFormaInFixa(posFixa2);
-    char *inFixa3 = getFormaInFixa(posFixa3);
+    int numeroDeTestes = sizeof(testes) / sizeof(testes[0]);
 
-    // Calculando o valor das expressões
-    float valor1 = getValor(posFixa1);
-    float valor2 = getValor(posFixa2);
-    float valor3 = getValor(posFixa3);
-
-    // Imprimindo os resultados
-    printf("Expressao 1: %s\n", posFixa1);
-    printf("Infixa 1: %s\n", inFixa1);
-    printf("Valor 1: %.2f\n\n", valor1);
-
-    printf("Expressao 2: %s\n", posFixa2);
-    printf("Infixa 2: %s\n", inFixa2);
-    printf("Valor 2: %.2f\n\n", valor2);
-
-    printf("Expressao 3: %s\n", posFixa3);
-    printf("Infixa 3: %s\n", inFixa3);
-    printf("Valor 3: %.2f\n\n", valor3);
+    for (int i = 0; i < numeroDeTestes; i++) {
+        testarExpressao(testes[i]);
+    }
 
     return 0;
 }
